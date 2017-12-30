@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+    <html style="height: 100%;">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Flask Google Maps Example</title>
+    {{movingmap.js}}
+    <script src="https://code.jquery.com/jquery-3.2.1.js"
+        integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.default.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script>
+    function map_on_click(latLong, map, markers=[]) {
+        setMapOnAll(null, markers);
+        marker = new google.maps.Marker({
+            position: latLong,
+            map: map,
+            draggable:true
+        });
+        $("#location").val(latLong);
+        google.maps.event.addListener(marker, 'dragend', function()
+        {
+            $("#location").val(marker.getPosition());
+        });
+        markers.push(marker);
+        //console.log(event);
+        //console.log(map);
+        //console.log(marker);
+        //console.log(markers);
+
+      function setMapOnAll(map, markers) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+    }
+    </script>
+</head>
+
+<body style="height: 100%;">
+
+<h1> Ubica tu paradero</h1>
+<!--<h2>You can move markers dynamically and add new markers, refresh its position etc... </h2>-->
+<div class="container" style="height: 100%;">
+      <div class="row" style="height: 100%;">
+          <div class="col-9">
+            <section>
+                {{movingmap.html}}
+            </section>
+          </div>
+        <div class="col-3">
+            <form action="" method="post" name="save">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.company.label }}<br>
+                    {{ form.company(size=32, id="select_item") }}
+                </p>
+                <p>
+                    {{ form.position.label }}<br>
+                    {{ form.position(size=32, id="location") }}
+                </p>
+                <p>{{ form.submit() }}</p>
+            </form>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        </div>
+      </div>
+</div>
+
+<script>
+        var options = {
+					maxItems: 1,
+					valueField: 'id',
+					labelField: 'title',
+					searchField: 'title',
+					<!--options: [-->
+						<!--{id: 1, title: 'Spectrometer', url: 'http://en.wikipedia.org/wiki/Spectrometers'},-->
+						<!--{id: 2, title: 'Star Chart', url: 'http://en.wikipedia.org/wiki/Star_chart'},-->
+						<!--{id: 3, title: 'Electrical Tape', url: 'http://en.wikipedia.org/wiki/Electrical_tape'}-->
+					<!--]-->
+				}
+        $('#select_item').selectize(options);
+    </script>
+</body>
+</html>
