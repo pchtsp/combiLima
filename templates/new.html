@@ -12,11 +12,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.default.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script>
+    function map_on_click(latLong, map, markers=[]) {
+        setMapOnAll(null, markers);
+        marker = new google.maps.Marker({
+            position: latLong,
+            map: map,
+            draggable:true
+        });
+        $("#location").val(latLong);
+        google.maps.event.addListener(marker, 'dragend', function()
+        {
+            $("#location").val(marker.getPosition());
+        });
+        markers.push(marker);
+
+      function setMapOnAll(map, markers) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+    }
+    </script>
 </head>
 
 <body style="height: 100%;">
 
-<h1> Ubica tu linea</h1>
+<h1> Ubica tu paradero</h1>
 <!--<h2>You can move markers dynamically and add new markers, refresh its position etc... </h2>-->
 <div class="container" style="height: 100%;">
       <div class="row" style="height: 100%;">
@@ -26,11 +48,15 @@
             </section>
           </div>
         <div class="col-3">
-            <form action="" name="search">
+            <form action="" method="post" name="save">
                 {{ form.hidden_tag() }}
                 <p>
                     {{ form.company.label }}<br>
                     {{ form.company(size=32, id="select_item") }}
+                </p>
+                <p>
+                    {{ form.position.label }}<br>
+                    {{ form.position(size=32, id="location") }}
                 </p>
                 <p>{{ form.submit() }}</p>
             </form>
