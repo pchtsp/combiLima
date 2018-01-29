@@ -142,6 +142,10 @@ def fullmap():
     )
     return render_template('example_fullmap.html', fullmap=fullmap)
 
+@app.route('/get_lines')
+def get_lines():
+    pass
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=True)
