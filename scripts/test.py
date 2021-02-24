@@ -3,6 +3,9 @@ import urllib.request
 import os
 import re
 import app.aux as aux
+import pprint as pp
+import urllib.parse
+import shutil
 
 os.environ['all_proxy'] = ""
 os.environ['http_proxy'] = ""
@@ -35,8 +38,49 @@ def get_param_by_id(id, param="stops", index="routes"):
     return
 
 
-if __name__ == "__main__":
+def get_image(route_code, dir='shortName'):
 
+    # route_code = "IO49"
+    region = "Lima"
+    server = 'http://image.tumicro.pe'
+    url = "{}/{}/{}.jpg".format(server, region, urllib.parse.quote_plus(route_code))
+    file_name = "data/img/{}/{}.jpg".format(dir, aux.clean_chars(route_code))
+
+    content = ""
+    try:
+        with urllib.request.urlopen(url) as response:
+            content = response.read()
+    except:
+        print("Error!")
+
+    if content == "":
+        return False
+
+    with open(file_name, 'wb') as f:
+        f.write(content)
+
+    return True
+
+
+def download_all_routes():
+    file_name = 'data/routes.json'
+    with open(file_name, 'r') as f:
+        content = json.load(f)
+        # json_data = json.loads(content["route"]["desc"])
+        # comp.add(json_data.get("agency_name", ""))
+    list = [r['longName'] for r in content]
+    # list = [r['shortName'] for r in content]
+
+    result = {}
+
+    for l in list:
+        result[l] = get_image(l, dir='longName')
+
+    with open("data/log/results_longName.txt", 'w') as f:
+        json.dump(result, f)
+
+
+def download_trips():
     # index_file = r"data/routes.json"
     # index_file = r"data/stops.json"
     # index_file = r"data/patterns.json"
@@ -79,5 +123,28 @@ if __name__ == "__main__":
             print("id= {}; param={}".format(id, param))
             get_param_by_id(id, index=index, param=param)
 
+
+if __name__ == "__main__":
+    # download_all_routes()
+
+    file_name = 'data/routes.json'
+    with open(file_name, 'r') as f:
+        content = json.load(f)
+        # json_data = json.loads(content["route"]["desc"])
+        # comp.add(json_data.get("agency_name", ""))
+
+    list1 = [r['longName'] for r in content]
+    list2 = [r['shortName'] for r in content]
+    list1_list2 = {l1 + '.jpg': list2[pos] + '.jpg'
+                   for pos, l1 in enumerate(list1)}
+
+    dir = 'data/img/'
+    for file in os.listdir(dir + 'longName/'):
+        file_name = dir + 'longName/' + file
+        new_file_name = dir + 'shortName_all/' + list1_list2[file]
+        shutil.copy(file_name, new_file_name)
+
+
+    pass
 
 

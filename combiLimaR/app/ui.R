@@ -12,6 +12,7 @@ bootstrapPage(
     tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
     # div(class="outer",
     h2("combiLima"),
+    p("Click on the map to get the closest lines aroud you"),
       # tags$head(
         # Include our custom CSS
         # includeCSS("styles.css")
